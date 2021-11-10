@@ -39,7 +39,7 @@ class MisiPwGen:
 
     def _max_weight(self, length):
         """ max cumulative weight depends on residual letters """
-        length = 2 if length < 2 else 4 if length > 3 else length
+        length = 1 if length < 1 else 4 if length > 3 else length
         return self.cumulative_weights[self.last_syllable_by_length[length]]
 
     def _invert(self, weight):
@@ -49,6 +49,3 @@ class MisiPwGen:
             j += 1
         return j
 
-
-a = MisiPwGen()
-print(a.generate(7))

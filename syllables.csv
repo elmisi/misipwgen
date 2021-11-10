@@ -1,6 +1,6 @@
 # one letter
 
-1;10;aeiou
+1;7;aeiou
 
 # two letters
 
@@ -77,8 +77,8 @@
 
 # three letters
 
-1;20;aeio;cbdfglmnprstvz;aeiou
-1;10;u;cbdfglmnprstvz;aeiou
+1;10;aeio;cbdfglmnprstvz;aeiou
+1;8;u;cbdfglmnprstvz;aeiou
 1;2;b;r;aeiou
 1;1;b;l;aeiou
 0;1;b;d;aeiou
