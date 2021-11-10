@@ -3,17 +3,10 @@ from random import randint
 
 class Syllable:
 
-    def __init__(self):
-        self.starting = False
-        self.weight = 0
-        self.letters = list()
-
-    def from_row(self, row):
-        self.starting = int(row[0]) == 1
-        self.weight = int(row[1])
-        self.letters = row[2:]
-
-        return self
+    def __init__(self, starting: bool, weight: int, letters: list):
+        self.starting = starting
+        self.weight = weight
+        self.letters = letters
 
     def random(self):
         s = ""

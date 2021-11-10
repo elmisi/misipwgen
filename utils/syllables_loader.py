@@ -1,6 +1,6 @@
 import csv
 
-from utils.syllables import Syllable
+from utils.syllable import Syllable
 
 
 class SyllablesLoader:
@@ -13,7 +13,11 @@ class SyllablesLoader:
         with open(self.file, newline='') as csv_file:
             syllables = csv.reader(csv_file, delimiter=';', quotechar='|')
             for row in self._only_data(syllables):
-                s = Syllable().from_row(row)
+                s = Syllable(
+                    starting=int(row[0]) == 1,
+                    weight=int(row[1]),
+                    letters=row[2:]
+                )
                 res.append(s)
         return res
 
