@@ -1,5 +1,4 @@
-from random import randint
-
+from utils.cumulative import CumulativeDistribution
 from utils.syllables_loader import SyllablesLoader
 
 SYLLABLES_FILE = 'syllables.csv'
@@ -9,9 +8,9 @@ class MisiPwGen:
 
     def __init__(self):
         self.syllables = SyllablesLoader(SYLLABLES_FILE).load()
-        self.last_syllable_by_length = dict()
-        self.cumulative_weights = dict()
-        self._init_cumulative()
+        self.last_syllable_by_length = self._last_syllable_by_length()
+        self.max_syllable_length = self.syllables[-1].length()
+        self.cumulative = CumulativeDistribution(weights=[s.weight for s in self.syllables])
 
     def generate(self, n=8):
         word = ""
@@ -20,32 +19,28 @@ class MisiPwGen:
         while residual > 0:
             first_syllable = residual == n
             last_letter = word[-1:]
-            max_weight = self._max_weight(residual)
-            index = self._invert(randint(0, max_weight))
-            syllable = self.syllables[index]
-            if not first_syllable or syllable.starting:
-                new_syllable = syllable.random()
-                if new_syllable[0] != last_letter:
-                    word += new_syllable
+
+            max_index = self._last_index(residual)
+            choice = self.cumulative.random_invert(max_index)
+            syllable = self.syllables[choice]
+
+            if syllable.apply(first_syllable):
+                syllable_letters = syllable.random()
+                if syllable_letters[0] != last_letter:
+                    word += syllable_letters
                     residual = n - len(word)
 
         return word
 
-    def _init_cumulative(self):
-        last_cum = 0
+    def _last_syllable_by_length(self):
+        res = dict()
         for i, syllable in enumerate(self.syllables):
-            self.last_syllable_by_length[syllable.length()] = i
-            last_cum = self.cumulative_weights[i] = last_cum + syllable.weight
+            res[syllable.length()] = i
+        return res
 
-    def _max_weight(self, length):
-        """ max cumulative weight depends on residual letters """
-        length = 1 if length < 1 else 4 if length > 3 else length
-        return self.cumulative_weights[self.last_syllable_by_length[length]]
+    def _last_index(self, length):
+        """ return last syllables index depending  """
+        length = 1 if length < 1 else self.max_syllable_length if length >= self.max_syllable_length else length
+        return self.last_syllable_by_length[length]
 
-    def _invert(self, weight):
-        """ invert cumulative weights function """
-        j = 0
-        while self.cumulative_weights[j] < weight and j < len(self.cumulative_weights):
-            j += 1
-        return j
 
