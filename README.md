@@ -2,11 +2,22 @@
 
 Random word generator pronounceable in Italian
 
+## Dependencies
+
+Nothing
+
 ## Use
 
 ```python
 
 from misipwgen import MisiPwGen
-g = MisiPwGen()
-word = g.generate(7)
+
+pwg = MisiPwGen()
+word = pwg.generate(7)
+```
+
+## Test
+
+```shell
+ python -m unittest -v
 ```
