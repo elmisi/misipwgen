@@ -1,0 +1,10 @@
+# this line is ignored
+# and also the following empty line
+
+0;2;t;t;r;aeiou
+0;1;n;v;aeiou
+1;7;aeiou
+1;2;b;r;aeiou
+1;5;b;a
+
+# the loader sorts the syllables definition by length

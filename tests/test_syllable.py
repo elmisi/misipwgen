@@ -6,18 +6,28 @@ from utils.syllable import Syllable
 class SyllableTestCase(TestCase):
 
     def test_can_print_syllable(self):
+        s = Syllable(starting=True, weight=5, sequence=["abc"])
+        self.assertEqual(str(s), "abc")
 
-        s = Syllable(starting=True, weight=5, letters=['a', "lvrd", "a"])
-        self.assertEqual(str(s), "True 5 ['a', 'lvrd', 'a']")
+        s = Syllable(starting=True, weight=5, sequence=["a", "lvrd", "a"])
+        self.assertEqual(str(s), "a-lvrd-a")
 
     def test_syllable_length(self):
 
-        s = Syllable(starting=True, weight=5, letters=['a', "lvrd", "a"])
+        s = Syllable(starting=True, weight=5, sequence=["a", "lvrd", "a"])
         self.assertEqual(s.length(), 3)
 
-    @mock.patch('utils.syllable.randint', side_effect=[1, 2, 0])
-    def test_random_generation(self, mock_randint):
+        s = Syllable(starting=True, weight=5, sequence=["a", "b", "c", "d"])
+        self.assertEqual(s.length(), 4)
 
-        s = Syllable(starting=True, weight=5, letters=['aei', "lvrd", "aou"])
-        self.assertEqual(s.random(), 'era')
-        mock_randint.assert_called()
+    def test_random_generation(self):
+
+        s = Syllable(starting=True, weight=5, sequence=["x", "y", "z"])
+        self.assertEqual(s.random(), "xyz")
+
+        s = Syllable(starting=True, weight=5, sequence=["ab", "cd"])
+        self.assertIn(s.random(), ["ac", "ad", "bc", "bd"])
+
+        s = Syllable(starting=True, weight=5, sequence=["aei", "lvrd", "aou"])
+        with mock.patch("utils.syllable.randint", side_effect=[1, 2, 0]):
+            self.assertEqual(s.random(), "era")
