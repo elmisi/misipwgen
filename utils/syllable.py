@@ -3,20 +3,23 @@ from random import randint
 
 class Syllable:
 
-    def __init__(self, starting: bool, weight: int, letters: list):
+    def __init__(self, starting: bool, weight: int, sequence: list):
         self.starting = starting
         self.weight = weight
-        self.letters = letters
+        self.sequence = sequence
 
     def random(self):
         s = ""
         for i in range(0, self.length()):
-            pos = randint(0, len(self.letters[i])-1)
-            s += self.letters[i][pos]
+            pos = randint(0, len(self.sequence[i]) - 1)
+            s += self.sequence[i][pos]
         return s
 
+    def apply(self, first_position):
+        return not first_position or self.starting
+
     def length(self):
-        return len(self.letters)
+        return len(self.sequence)
 
     def __str__(self):
-        return f"{self.starting} {self.weight} {self.letters}"
+        return "-".join(self.sequence)
