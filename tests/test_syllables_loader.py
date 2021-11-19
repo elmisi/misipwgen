@@ -1,5 +1,5 @@
 from unittest import TestCase
-from utils.syllables_loader import SyllablesLoader
+from misipwgen.syllables_loader import SyllablesLoader
 
 
 class SyllablesLoaderTestCase(TestCase):

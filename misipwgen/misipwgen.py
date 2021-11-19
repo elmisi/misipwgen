@@ -1,7 +1,7 @@
-from utils.cumulative import CumulativeDistribution
-from utils.syllables_loader import SyllablesLoader
+from .cumulative import CumulativeDistribution
+from .syllables_loader import SyllablesLoader
 
-SYLLABLES_FILE = 'syllables.csv'
+SYLLABLES_FILE = 'misipwgen/syllables.csv'
 
 
 # TODO: tests missing

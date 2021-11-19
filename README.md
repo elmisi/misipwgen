@@ -29,3 +29,10 @@ word = pwg.generate(7)
 ```shell
  python -m unittest -v
 ```
+
+## Coverage
+
+```shell
+coverage run -m unittest -v
+coverage report -m
+```
