@@ -1,0 +1,9 @@
+[tool.black]
+line-length = 105
+
+[tool.isort]
+known_first_party = [
+    "misipwgen",
+]
+line_length = 105
+profile = "black"
