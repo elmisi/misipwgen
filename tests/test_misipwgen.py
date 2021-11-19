@@ -5,12 +5,11 @@ from misipwgen import MisiPwGen
 
 @mock.patch("misipwgen.misipwgen.SYLLABLES_FILE", "tests/fixtures/syllables2.csv")
 class MisiPwGenTestCase(TestCase):
-
     def test_misipwgen_loads_syllables(self):
         pwg = MisiPwGen()
 
-        self.assertEqual([str(s) for s in pwg.syllables],  ['b-ae', 'c-io', 'd-ua', 'f-ai'])
-        self.assertEqual(pwg.cumulative.cumulative,  {0: 5, 1: 10, 2: 15, 3: 20})
+        self.assertEqual([str(s) for s in pwg.syllables], ["b-ae", "c-io", "d-ua", "f-ai"])
+        self.assertEqual(pwg.cumulative.cumulative, {0: 5, 1: 10, 2: 15, 3: 20})
 
     def test_generate(self):
         pwg = MisiPwGen()

@@ -1,5 +1,4 @@
 class SyllableCollection(list):
-
     def __init__(self):
         super(SyllableCollection, self).__init__()
         self.last_syllable_by_length = dict()
@@ -14,5 +13,11 @@ class SyllableCollection(list):
 
     def last_index(self, length):
         """ return last syllables index depending  """
-        length = 1 if length < 1 else self.max_syllable_length if length >= self.max_syllable_length else length
+        length = (
+            1
+            if length < 1
+            else self.max_syllable_length
+            if length >= self.max_syllable_length
+            else length
+        )
         return self.last_syllable_by_length[length]

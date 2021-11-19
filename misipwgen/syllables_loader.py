@@ -5,14 +5,13 @@ from .syllable_collection import SyllableCollection
 
 
 class SyllablesLoader:
-
     def __init__(self, file):
         self.file = file
 
     def load(self):
         collection = SyllableCollection()
-        with open(self.file, newline='') as csv_file:
-            syllable_definitions = csv.reader(csv_file, delimiter=';', quotechar='|')
+        with open(self.file, newline="") as csv_file:
+            syllable_definitions = csv.reader(csv_file, delimiter=";", quotechar="|")
             for row in self._only_data(syllable_definitions):
                 s = Syllable(starting=int(row[0]) == 1, weight=int(row[1]), sequence=row[2:])
                 collection.append(s)

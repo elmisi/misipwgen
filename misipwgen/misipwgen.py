@@ -6,7 +6,6 @@ from .syllables_loader import SyllablesLoader
 
 
 class MisiPwGen:
-
     def __init__(self):
         self.syllables = SyllablesLoader(SYLLABLES_FILE).load()
         self.cumulative = CumulativeDistribution(weights=[s.weight for s in self.syllables])

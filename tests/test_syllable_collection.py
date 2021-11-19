@@ -5,7 +5,6 @@ from misipwgen.syllable_collection import SyllableCollection
 
 
 class SyllableCollectionTestCase(TestCase):
-    
     def setUp(self) -> None:
         super(SyllableCollectionTestCase, self).setUp()
 

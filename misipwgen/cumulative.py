@@ -1,5 +1,4 @@
 class CumulativeDistribution:
-
     def __init__(self, weights):
         self.cumulative = self._build(weights)
 

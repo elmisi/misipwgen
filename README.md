@@ -24,10 +24,17 @@ pwg = MisiPwGen()
 word = pwg.generate(7)
 ```
 
+## Black
+
+```shell
+black .
+```
+
+
 ## Test
 
 ```shell
- python -m unittest -v
+python -m unittest -v
 ```
 
 ## Coverage

@@ -1,1 +1,1 @@
-SYLLABLES_FILE = 'misipwgen/it_syllables.csv'
+SYLLABLES_FILE = "misipwgen/it_syllables.csv"

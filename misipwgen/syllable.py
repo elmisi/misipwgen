@@ -2,7 +2,6 @@ from random import randint
 
 
 class Syllable:
-
     def __init__(self, starting: bool, weight: int, sequence: list):
         self.starting = starting
         self.weight = weight

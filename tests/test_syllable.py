@@ -4,7 +4,6 @@ from misipwgen.syllable import Syllable
 
 
 class SyllableTestCase(TestCase):
-
     def test_can_print_syllable(self):
         s = Syllable(starting=True, weight=5, sequence=["abc"])
         self.assertEqual(str(s), "abc")

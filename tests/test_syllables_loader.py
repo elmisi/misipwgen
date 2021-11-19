@@ -3,13 +3,12 @@ from misipwgen.syllables_loader import SyllablesLoader
 
 
 class SyllablesLoaderTestCase(TestCase):
-
     def test_ignore_row(self):
 
         for row, expected in [
-                ([], True),
-                (["#"], True),
-                (["xyz"], False),
+            ([], True),
+            (["#"], True),
+            (["xyz"], False),
         ]:
             with self.subTest(row=row):
                 self.assertEqual(SyllablesLoader._ignore_row(row), expected)
@@ -27,5 +26,5 @@ class SyllablesLoaderTestCase(TestCase):
 
         self.assertEqual(
             [str(s) for s in syllables],
-            ['aeiou', 'b-a', 'b-r-aeiou', 'n-v-aeiou', 't-t-r-aeiou'],
+            ["aeiou", "b-a", "b-r-aeiou", "n-v-aeiou", "t-t-r-aeiou"],
         )
