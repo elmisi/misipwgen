@@ -11,7 +11,7 @@ Nothing
 Just generate a random word:
 
 ```shell
-python -c "from misipwgen import MisiPwGen ; p=MisiPwGen() ; print(p.generate(7))" 
+python -c "from misipwgen import MisiPwGen ; print(MisiPwGen().generate(7))" 
 ```
 
 ## Use
