@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from misipwgen.syllables_loader import SyllablesLoader
 
 

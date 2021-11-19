@@ -10,7 +10,7 @@ Nothing
 
 Just generate a random word:
 
-```shell
+```commandline
 python -c "from misipwgen import MisiPwGen ; print(MisiPwGen().generate(7))" 
 ```
 
@@ -24,22 +24,28 @@ pwg = MisiPwGen()
 word = pwg.generate(7)
 ```
 
-## Black
+## black
 
-```shell
+```commandline
 black .
+```
+
+## isort
+
+```commandline
+isort .
 ```
 
 
 ## Test
 
-```shell
+```commandline
 python -m unittest -v
 ```
 
 ## Coverage
 
-```shell
+```commandline
 coverage run -m unittest -v
 coverage report
 ```
