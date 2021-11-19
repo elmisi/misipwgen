@@ -1,3 +1,6 @@
+# Syllables collection format
+# starting;weight;sequence1[;sequence2;...;sequenceN]
+
 # one letter
 
 1;7;aeiou

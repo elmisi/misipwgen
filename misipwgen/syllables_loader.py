@@ -1,6 +1,7 @@
 import csv
 
-from .syllable import Syllable, SyllableCollection
+from .syllable import Syllable
+from .syllable_collection import SyllableCollection
 
 
 class SyllablesLoader:

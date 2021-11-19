@@ -1,10 +1,10 @@
+from random import randint
+
 from .cumulative import CumulativeDistribution
+from .settings import SYLLABLES_FILE
 from .syllables_loader import SyllablesLoader
 
-SYLLABLES_FILE = 'misipwgen/syllables.csv'
 
-
-# TODO: tests missing
 class MisiPwGen:
 
     def __init__(self):
@@ -16,9 +16,7 @@ class MisiPwGen:
         residual = n
 
         while residual > 0:
-            max_index = self.syllables.last_index(residual)
-            choice = self.cumulative.random_invert(max_index)
-            syllable = self.syllables[choice]
+            syllable = self._random_syllable(residual)
 
             if syllable.is_usable(first_position=(residual == n)):
                 syllable_letters = syllable.random()
@@ -27,3 +25,10 @@ class MisiPwGen:
                     residual = n - len(word)
 
         return word
+
+    def _random_syllable(self, residual):
+        index = self.syllables.last_index(residual)
+        max_weight = self.cumulative.weight_at(index)
+        weight = randint(0, max_weight)
+        choice = self.cumulative.invert(weight)
+        return self.syllables[choice]
