@@ -34,5 +34,5 @@ word = pwg.generate(7)
 
 ```shell
 coverage run -m unittest -v
-coverage report -m
+coverage report
 ```
