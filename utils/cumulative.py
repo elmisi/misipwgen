@@ -1,6 +1,7 @@
 from random import randint
 
 
+# TODO: tests missing
 class CumulativeDistribution:
 
     def __init__(self, weights):
@@ -16,7 +17,7 @@ class CumulativeDistribution:
 
     def random_invert(self, max_index):
         """
-        Return index
+        Return index from random weight inversion given the max index
         :return:
         """
         max_weight = self.cumulative[max_index]
@@ -25,7 +26,7 @@ class CumulativeDistribution:
 
     def _invert(self, weight):
         """ invert function """
-        for j, w in enumerate(self.cumulative):
+        for j, w in self.cumulative.items():
             if w < weight:
                 continue
             else:

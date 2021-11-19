@@ -6,6 +6,14 @@ Random word generator pronounceable in Italian
 
 Nothing
 
+## Try it now!
+
+Just generate a random word:
+
+```shell
+python -c "from misipwgen import MisiPwGen ; p=MisiPwGen() ; print(p.generate(7))" 
+```
+
 ## Use
 
 ```python

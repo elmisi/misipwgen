@@ -31,3 +31,13 @@ class SyllableTestCase(TestCase):
         s = Syllable(starting=True, weight=5, sequence=["aei", "lvrd", "aou"])
         with mock.patch("utils.syllable.randint", side_effect=[1, 2, 0]):
             self.assertEqual(s.random(), "era")
+
+    def test_is_usable(self):
+
+        s = Syllable(starting=True, weight=5, sequence=["x"])
+        self.assertTrue(s.is_usable(first_position=True))
+        self.assertTrue(s.is_usable(first_position=False))
+
+        s = Syllable(starting=False, weight=5, sequence=["x"])
+        self.assertFalse(s.is_usable(first_position=True))
+        self.assertTrue(s.is_usable(first_position=False))
