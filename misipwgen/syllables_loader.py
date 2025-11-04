@@ -10,7 +10,7 @@ class SyllablesLoader:
 
     def load(self):
         collection = SyllableCollection()
-        with open(self.file, newline="") as csv_file:
+        with open(self.file, newline="", encoding="utf-8") as csv_file:
             syllable_definitions = csv.reader(csv_file, delimiter=";", quotechar="|")
             for row in self._only_data(syllable_definitions):
                 s = Syllable(starting=int(row[0]) == 1, weight=int(row[1]), sequence=row[2:])
@@ -27,4 +27,4 @@ class SyllablesLoader:
 
     @staticmethod
     def _ignore_row(row):
-        return len(row) == 0 or row[0][0] == "#"
+        return len(row) == 0 or (not row[0]) or row[0].startswith("#")
