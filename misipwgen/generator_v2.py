@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from importlib import resources
 from bisect import bisect_left
 from random import randrange
 from typing import Iterable, List, Optional, Sequence
@@ -46,34 +45,6 @@ class SyllableV2:
 
     def __str__(self) -> str:
         return "-".join(self.sequence)
-
-
-class SyllablesLoaderV2:
-    def __init__(self, file: str):
-        self.file = file
-
-    def load(self) -> SyllableCollectionV2:
-        import csv
-
-        coll = SyllableCollectionV2()
-        with open(self.file, newline="", encoding="utf-8") as csv_file:
-            reader = csv.reader(csv_file, delimiter=";", quotechar="|")
-            for row in reader:
-                if not row or (row[0] and row[0].startswith("#")):
-                    continue
-                # Expect: w_start; w_middle; w_end; seq1; [seq2; ...]
-                if len(row) < 4:
-                    continue
-                try:
-                    ws = int(row[0])
-                    wm = int(row[1])
-                    we = int(row[2])
-                except ValueError:
-                    continue
-                seq = row[3:]
-                coll.append(SyllableV2(w_start=ws, w_middle=wm, w_end=we, sequence=seq))
-        coll.finalize()
-        return coll
 
 
 class SyllablesLoaderV2Py:
@@ -144,38 +115,37 @@ class CumulativeV2:
 
 class MisiPwGenV2:
     def __init__(self, lang: Optional[str] = None, syllables_path: Optional[str] = None, *, rng=None):
-        """Position-aware generator using schema v2 CSV.
+        """Position-aware generator using schema v2 data from a Python module.
 
-        - If `syllables_path` is provided, load that CSV.
-        - Else if `lang` is provided, load `misipwgen/data/{lang}/syllables_v2.csv`.
+        - If `syllables_path` is provided, it must be an importable Python module path
+          exporting `SYLLABLES_V2` (e.g. `misipwgen.data.it.syllables_v2`).
+        - Else if `lang` is provided, tries module candidates:
+          `misipwgen.data.{lang}.syllables_v2` and `misipwgen.data.{lang}_syllables_v2`.
         """
         self.rng = rng
 
         if syllables_path:
-            loader_path = syllables_path
+            # Interpret syllables_path as module path
+            self.syllables = SyllablesLoaderV2Py(syllables_path).load()
         elif lang:
             # Prefer Python module if present (best performance)
             module_candidates = [
                 f"misipwgen.data.{lang}.syllables_v2",
                 f"misipwgen.data.{lang}_syllables_v2",
             ]
-            loader_path = None
+            self.syllables = None
             for module_name in module_candidates:
                 try:
                     self.syllables = SyllablesLoaderV2Py(module_name).load()
-                    loader_path = None
                     break
                 except Exception:
                     continue
-            if self.syllables is None or loader_path is not None:
-                res = resources.files("misipwgen").joinpath(f"data/{lang}/syllables_v2.csv")
-                with resources.as_file(res) as p:
-                    loader_path = str(p)
+            if self.syllables is None:
+                raise ValueError(
+                    f"Could not import Python module for v2 syllables. Tried: {', '.join(module_candidates)}"
+                )
         else:
             raise ValueError("Specify either lang or syllables_path for v2 generator")
-
-        if loader_path:
-            self.syllables = SyllablesLoaderV2(loader_path).load()
         self.cumulative = CumulativeV2(self.syllables)
 
     def generate(self, n: int = 8) -> str:
@@ -277,8 +247,8 @@ class MisiPwGenV2:
         return cls(lang=lang, rng=rng)
 
     @classmethod
-    def from_csv(cls, path, *, rng=None) -> "MisiPwGenV2":
-        return cls(syllables_path=str(path), rng=rng)
+    def from_module(cls, module: str, *, rng=None) -> "MisiPwGenV2":
+        return cls(syllables_path=module, rng=rng)
 
     def _render_syllable(self, syllable):
         if self.rng is None:

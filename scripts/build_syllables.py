@@ -22,21 +22,17 @@ except Exception:  # noqa: BLE001
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Build syllables CSV from a text corpus")
+    p = argparse.ArgumentParser(description="Build syllables data from a text corpus")
     p.add_argument("--lang", required=True, help="Language code, e.g. it")
     p.add_argument("--corpus", required=True, help="Path to corpus text file")
-    p.add_argument(
-        "--output",
-        help=(
-            "Output CSV path (defaults: schema v2 -> misipwgen/data/{lang}/syllables_v2.csv; "
-            "legacy -> misipwgen/data/{lang}/syllables.csv)"
-        ),
-    )
+    p.add_argument("--output", help=(
+        "Output path. For v2 generates a Python module at misipwgen/data/{lang}/syllables_v2.py "
+        "by default; for legacy (v1) a CSV at misipwgen/data/{lang}/syllables.csv."
+    ))
     p.add_argument("--alpha", type=float, default=0.7, help="Power transform exponent (0<alpha<=1)")
     p.add_argument("--k", type=float, default=1.0, help="Additive smoothing constant (>=0)")
     p.add_argument("--min-count", type=int, default=3, help="Minimum raw count to include a syllable")
     p.add_argument("--schema", choices=["v1", "v2"], default="v2", help="Output schema version")
-    p.add_argument("--format", choices=["csv", "py"], default="csv", help="Output format for v2 (csv or py module)")
     return p.parse_args()
 
 
@@ -129,6 +125,34 @@ def _is_open_syllable_it(s: str) -> bool:
     return onset in allowed_onsets
 
 
+def _is_open_syllable_es(s: str) -> bool:
+    """Heuristic filter for Spanish-like open syllables.
+
+    - Ends with vowel (includes áéíóúü)
+    - Onset empty or simple Spanish onset/cluster
+    - Contains at least one vowel
+    """
+    V = set("aeiouáéíóúü")
+    if not s or s[-1] not in V:
+        return False
+    j = 0
+    while j < len(s) and s[j] not in V:
+        j += 1
+    if j == len(s):
+        return False
+    onset = s[:j]
+    allowed_onsets = {
+        "",
+        # single consonants (incl. ñ, y)
+        "b","c","d","f","g","l","m","n","p","r","s","t","v","y","z","ñ",
+        # common clusters
+        "br","cr","dr","fr","gr","pr","tr",
+        "pl","cl","gl","fl","bl",
+        "ch","ll","rr",
+    }
+    return onset in allowed_onsets
+
+
 def write_legacy_csv(output_path: str, start: Dict[str, int], middle: Dict[str, int], *, k: float, alpha: float) -> None:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -162,29 +186,6 @@ def write_legacy_csv(output_path: str, start: Dict[str, int], middle: Dict[str, 
             out.write(line + "\n")
 
 
-def write_v2_csv(output_path: str, start: Dict[str, int], middle: Dict[str, int], end: Dict[str, int], *, k: float, alpha: float) -> None:
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    with open(output_path, "w", encoding="utf-8") as out:
-        out.write("# schema=2; generated=" + ts + "\n")
-        out.write("# w_start;w_middle;w_end;sequence1[;sequence2;...;sequenceN]\n\n")
-
-        all_sylls = set(start) | set(middle) | set(end)
-        rows: List[str] = []
-        for syl in all_sylls:
-            ws = weight_transform(start.get(syl, 0), k, alpha) if start.get(syl, 0) > 0 else 0
-            wm = weight_transform(middle.get(syl, 0), k, alpha) if middle.get(syl, 0) > 0 else 0
-            we = weight_transform(end.get(syl, 0), k, alpha) if end.get(syl, 0) > 0 else 0
-            if ws == 0 and wm == 0 and we == 0:
-                continue
-            seq = ";".join(to_sequence(syl))
-            rows.append(f"{ws};{wm};{we};{seq}")
-
-        rows.sort(key=lambda r: (len(r.split(";")) - 3, r))
-        for line in rows:
-            out.write(line + "\n")
-
-
 def write_v2_py(output_path: str, start: Dict[str, int], middle: Dict[str, int], end: Dict[str, int], *, k: float, alpha: float) -> None:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -214,12 +215,14 @@ def write_v2_py(output_path: str, start: Dict[str, int], middle: Dict[str, int],
 
 def main() -> None:
     args = parse_args()
-    lang = LanguagePack(code=args.lang, vowels="aeiouàèéìòóù")
-    default_name = (
-        ("syllables_v2.py" if args.format == "py" else "syllables_v2.csv")
-        if args.schema == "v2"
-        else "syllables.csv"
-    )
+    def _default_vowels(code: str) -> str:
+        return {
+            "it": "aeiouàèéìòóù",
+            "es": "aeiouáéíóúü",
+        }.get(code, "aeiou")
+
+    lang = LanguagePack(code=args.lang, vowels=_default_vowels(args.lang))
+    default_name = ("syllables_v2.py" if args.schema == "v2" else "syllables.csv")
     out_path = args.output or os.path.join("misipwgen", "data", args.lang, default_name)
 
     tokens = read_corpus_tokens(lang, args.corpus)
@@ -258,6 +261,12 @@ def main() -> None:
             return {k: (0 if any(ch in ACC for ch in k) else v) for k, v in d.items()}
         start = strip_accent_mid_start(start)
         middle = strip_accent_mid_start(middle)
+    elif args.lang == "es":
+        start = {k: v for k, v in start.items() if _is_open_syllable_es(k)}
+        middle = {k: v for k, v in middle.items() if _is_open_syllable_es(k)}
+        end = {k: v for k, v in end.items() if _is_open_syllable_es(k)}
+        # Limit vowel runs in the middle for pronounceability
+        middle = {k: v for k, v in middle.items() if len(k) > 1}
 
     if not start and not middle and not end:
         raise SystemExit(
@@ -265,20 +274,15 @@ def main() -> None:
         )
 
     if args.schema == "v2":
-        if args.format == "py":
-            # Ensure .py extension for module output
-            if not out_path.endswith(".py"):
-                out_path = os.path.splitext(out_path)[0] + ".py"
-            write_v2_py(out_path, start, middle, end, k=args.k, alpha=args.alpha)
-        else:
-            write_v2_csv(out_path, start, middle, end, k=args.k, alpha=args.alpha)
+        # Ensure .py extension for module output
+        if not out_path.endswith(".py"):
+            out_path = os.path.splitext(out_path)[0] + ".py"
+        write_v2_py(out_path, start, middle, end, k=args.k, alpha=args.alpha)
         kept = len(set(start) | set(middle) | set(end))
     else:
         write_legacy_csv(out_path, start, middle, k=args.k, alpha=args.alpha)
         kept = len(set(start) | set(middle))
-    print(
-        f"Wrote syllables to {out_path} (raw={total_raw}, kept={kept}, schema={args.schema}, format={args.format if args.schema=='v2' else 'csv'})"
-    )
+    print(f"Wrote syllables to {out_path} (raw={total_raw}, kept={kept}, schema={args.schema})")
 
 
 if __name__ == "__main__":

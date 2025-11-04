@@ -1,0 +1,11 @@
+# Ignore local external corpora and artifacts
+data/
+
+# Bytecode caches
+__pycache__/
+*/__pycache__/
+
+# Coverage/IDE artifacts
+.coverage
+coverage.xml
+.idea/

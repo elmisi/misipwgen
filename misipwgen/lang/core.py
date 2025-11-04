@@ -13,6 +13,8 @@ class LanguagePack:
     def syllabifier(self) -> "Syllabifier":
         if self.code == "it":
             return ItalianSyllabifier(self)
+        if self.code == "es":
+            return SpanishSyllabifier(self)
         raise ValueError(f"Unsupported language code: {self.code}")
 
 
@@ -23,10 +25,9 @@ class Syllabifier:
     def syllabify(self, word: str) -> List[str]:
         raise NotImplementedError
 
-    @staticmethod
-    def tokenize(text: str) -> Iterable[str]:
-        # Keep ASCII letters and common accented Italian vowels; split other chars
-        for token in re.findall(r"[a-zA-Zàèéìòóù]+", text.lower()):
+    def tokenize(self, text: str) -> Iterable[str]:
+        # Default fallback tokenizer: ASCII letters only
+        for token in re.findall(r"[a-zA-Z]+", text.lower()):
             if len(token) > 1:
                 yield token
 
@@ -111,6 +112,90 @@ class ItalianSyllabifier(Syllabifier):
 
         return parts
 
+    def tokenize(self, text: str) -> Iterable[str]:
+        # Include Italian accented vowels
+        for token in re.findall(r"[a-zàèéìòóù]+", text.lower()):
+            if len(token) > 1:
+                yield token
+
+
+class SpanishSyllabifier(Syllabifier):
+    """Simplified Spanish syllabifier (pragmatic, CV‑biased).
+
+    Notes:
+    - Treats common onset clusters; keeps syllables mostly open (CV/CVC).
+    - Handles accented vowels and ü; ñ is a consonant.
+    - Not a full phonological model; good enough for syllable statistics.
+    """
+
+    VOWELS = set("aeiouáéíóúü")
+
+    SIMPLE_ONSETS: Sequence[str] = (
+        "b c d f g l m n p r s t v y z ñ".split()
+        + [
+            "br",
+            "cr",
+            "dr",
+            "fr",
+            "gr",
+            "pr",
+            "tr",
+            "pl",
+            "cl",
+            "gl",
+            "fl",
+            "bl",
+            "ch",
+            # Historical digraphs; treat as permissible onsets
+            "ll",
+            "rr",
+        ]
+    )
+
+    def syllabify(self, word: str) -> List[str]:
+        parts: List[str] = []
+        i = 0
+        n = len(word)
+        while i < n:
+            # onset (allow 0..2 chars if in SIMPLE_ONSETS)
+            onset_end = i
+            if i + 2 <= n and word[i : i + 2] in self.SIMPLE_ONSETS:
+                onset_end = i + 2
+            elif i + 1 < n and word[i] not in self.VOWELS:
+                onset_end = i + 1
+
+            j = onset_end
+            # find first vowel
+            while j < n and word[j] not in self.VOWELS:
+                j += 1
+            # include vowel nucleus (allow simple diphthong)
+            if j < n:
+                j += 1
+                if j < n and word[j] in self.VOWELS:
+                    j += 1
+
+            # keep next consonants for the next onset when they form a cluster
+            coda_end = j
+            if j < n and word[j] not in self.VOWELS:
+                if j + 2 <= n and word[j : j + 2] in self.SIMPLE_ONSETS:
+                    coda_end = j
+                else:
+                    coda_end = j + 1
+
+            if coda_end <= i:
+                coda_end = min(i + 1, n)
+
+            parts.append(word[i:coda_end])
+            i = coda_end
+
+        return parts
+
+    def tokenize(self, text: str) -> Iterable[str]:
+        # Include Spanish accents, ü, and ñ
+        for token in re.findall(r"[a-záéíóúüñ]+", text.lower()):
+            if len(token) > 1:
+                yield token
+
 
 def to_sequence(syllable: str) -> List[str]:
     """Convert a syllable string into generator sequence columns.
@@ -118,4 +203,3 @@ def to_sequence(syllable: str) -> List[str]:
     Example: "ba" -> ["b", "a"].
     """
     return list(syllable)
-
