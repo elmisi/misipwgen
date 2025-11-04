@@ -1,5 +1,5 @@
 # Ignore local external corpora and artifacts
-data/
+/data/
 
 # Bytecode caches
 __pycache__/

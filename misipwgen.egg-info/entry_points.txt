@@ -1,0 +1,2 @@
+[console_scripts]
+misipwgen = misipwgen.__main__:main
