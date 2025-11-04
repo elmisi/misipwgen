@@ -7,3 +7,46 @@ known_first_party = [
 ]
 line_length = 105
 profile = "black"
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "misipwgen"
+dynamic = ["version"]
+description = "Random pronounceable word generator with positional syllables"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "elmisi" }
+]
+keywords = ["password", "generator", "syllable", "italian", "spanish"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security :: Cryptography",
+  "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/elmisi/misipwgen"
+Repository = "https://github.com/elmisi/misipwgen"
+
+[project.scripts]
+misipwgen = "misipwgen.__main__:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "misipwgen.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["misipwgen*"]
+
+[tool.setuptools.package-data]
+misipwgen = [
+  "*.csv",
+  "data/**/*.csv",
+]

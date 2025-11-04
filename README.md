@@ -14,6 +14,14 @@ Just generate a random word:
 python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('it').generate_word(7))" 
 ```
 
+Or install locally and use the CLI:
+
+```shell
+pip install .
+python -m misipwgen --sentence 16 --lang it --sep '-'
+python -m misipwgen 5 5 --lang es --sep '-'
+```
+
 ## Use
 
 ```python
