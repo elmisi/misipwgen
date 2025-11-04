@@ -1,0 +1,10 @@
+# Development and release tooling
+build
+twine
+
+# Formatting
+black
+isort
+
+# Testing & coverage
+coverage
