@@ -4,6 +4,7 @@ Simple Flask web application for misipwgen
 Exposes word, phrase, and sentence generation via web interface
 """
 
+import os
 from flask import Flask, render_template, request, jsonify
 from misipwgen import MisiPwGen
 
@@ -97,4 +98,7 @@ def generate_sentence():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # For local development
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("DEBUG", "True").lower() == "true"
+    app.run(debug=debug, host="0.0.0.0", port=port)
