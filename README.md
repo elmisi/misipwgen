@@ -7,7 +7,11 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Random word generator pronounceable in Italian
+Multilingual random word generator with natural pronunciation
+
+Generates pronounceable random words in multiple languages:
+- **Italian** (`it`) - Full support with language-specific syllabification
+- **Spanish** (`es`) - Full support with language-specific syllabification
 
 ## Dependencies
 
@@ -15,13 +19,17 @@ Nothing
 
 ## Try it now!
 
-Just generate a random word:
+Just generate a random word (specify language with `from_language()`):
 
 ```shell
-python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('it').generate_word(7))" 
+# Italian
+python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('it').generate_word(7))"
+
+# Spanish
+python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('es').generate_word(7))"
 ```
 
-Or install locally and use the CLI:
+Or install locally and use the CLI (use `--lang` to select language):
 
 ```shell
 pip install .
