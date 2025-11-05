@@ -1,5 +1,12 @@
 # misipwgen
 
+[![CI](https://github.com/elmisi/misipwgen/actions/workflows/ci.yml/badge.svg)](https://github.com/elmisi/misipwgen/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/elmisi/misipwgen/branch/main/graph/badge.svg)](https://codecov.io/gh/elmisi/misipwgen)
+[![PyPI version](https://badge.fury.io/py/misipwgen.svg)](https://badge.fury.io/py/misipwgen)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 Random word generator pronounceable in Italian
 
 ## Dependencies
@@ -116,27 +123,39 @@ pwg = MisiPwGen.from_language("it", rng=rng)
 print(pwg.generate_word(8))
 ```
 
-## black
+## Development
+
+### Setup
+
+```shell
+pip install -r requirements-dev.txt
+pre-commit install  # Optional: install git hooks
+```
+
+### Code Formatting
 
 ```shell
 black .
-```
-
-## isort
-
-```shell
 isort .
 ```
 
-## Test
+### Testing
 
 ```shell
-python -m unittest -v
+# Run tests with pytest
+pytest
+
+# Run tests with coverage (87%+ coverage!)
+python -m pytest -p pytest_cov --cov=misipwgen --cov-report=html --cov-report=term
+
+# Or use coverage directly
+coverage run -m pytest
+coverage report
+coverage html  # Generate HTML report
 ```
 
-## Coverage
+### Pre-commit Hooks
 
 ```shell
-coverage run -m unittest -v
-coverage report
+pre-commit run --all-files
 ```
