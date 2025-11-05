@@ -1,4 +1,4 @@
-Metadata-Version: 2.4
+Metadata-Version: 2.1
 Name: misipwgen
 Version: 0.2.0
 Summary: Random pronounceable word generator with positional syllables
@@ -6,6 +6,7 @@ Author: elmisi
 Project-URL: Homepage, https://github.com/elmisi/misipwgen
 Project-URL: Repository, https://github.com/elmisi/misipwgen
 Keywords: password,generator,syllable,italian,spanish
+Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: Programming Language :: Python :: 3.9
@@ -16,10 +17,22 @@ Classifier: Topic :: Security :: Cryptography
 Classifier: Topic :: Utilities
 Requires-Python: >=3.9
 Description-Content-Type: text/markdown
+License-File: LICENSE
 
 # misipwgen
 
-Random word generator pronounceable in Italian
+[![CI](https://github.com/elmisi/misipwgen/actions/workflows/ci.yml/badge.svg)](https://github.com/elmisi/misipwgen/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/elmisi/misipwgen/branch/main/graph/badge.svg)](https://codecov.io/gh/elmisi/misipwgen)
+[![PyPI version](https://badge.fury.io/py/misipwgen.svg)](https://badge.fury.io/py/misipwgen)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+Multilingual random word generator with natural pronunciation
+
+Generates pronounceable random words in multiple languages:
+- **Italian** (`it`) - Full support with language-specific syllabification
+- **Spanish** (`es`) - Full support with language-specific syllabification
 
 ## Dependencies
 
@@ -27,13 +40,17 @@ Nothing
 
 ## Try it now!
 
-Just generate a random word:
+Just generate a random word (specify language with `from_language()`):
 
 ```shell
-python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('it').generate_word(7))" 
+# Italian
+python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('it').generate_word(7))"
+
+# Spanish
+python -c "from misipwgen import MisiPwGen ; print(MisiPwGen.from_language('es').generate_word(7))"
 ```
 
-Or install locally and use the CLI:
+Or install locally and use the CLI (use `--lang` to select language):
 
 ```shell
 pip install .
@@ -135,27 +152,39 @@ pwg = MisiPwGen.from_language("it", rng=rng)
 print(pwg.generate_word(8))
 ```
 
-## black
+## Development
+
+### Setup
+
+```shell
+pip install -r requirements-dev.txt
+pre-commit install  # Optional: install git hooks
+```
+
+### Code Formatting
 
 ```shell
 black .
-```
-
-## isort
-
-```shell
 isort .
 ```
 
-## Test
+### Testing
 
 ```shell
-python -m unittest -v
+# Run tests with pytest
+pytest
+
+# Run tests with coverage (87%+ coverage!)
+python -m pytest -p pytest_cov --cov=misipwgen --cov-report=html --cov-report=term
+
+# Or use coverage directly
+coverage run -m pytest
+coverage report
+coverage html  # Generate HTML report
 ```
 
-## Coverage
+### Pre-commit Hooks
 
 ```shell
-coverage run -m unittest -v
-coverage report
+pre-commit run --all-files
 ```

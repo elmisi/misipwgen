@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 misipwgen/__init__.py
@@ -22,6 +23,9 @@ misipwgen/data/it/syllables_v2.py
 misipwgen/lang/core.py
 tests/test_build_syllables.py
 tests/test_cumulative.py
+tests/test_generator_v2.py
+tests/test_lang_core.py
+tests/test_main.py
 tests/test_misipwgen.py
 tests/test_phrase_sentence.py
 tests/test_syllable.py
