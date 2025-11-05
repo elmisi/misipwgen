@@ -29,3 +29,10 @@ class CumulativeDistributionTestCase(TestCase):
         self.assertEqual(c.weight_at(0), 10)
         self.assertEqual(c.weight_at(1), 30)
         self.assertEqual(c.weight_at(2), 45)
+
+    def test_invert_empty_raises_error(self):
+        """Test that invert raises ValueError for empty cumulative distribution"""
+        c = CumulativeDistribution(weights=[])
+        with self.assertRaises(ValueError) as ctx:
+            c.invert(1)
+        self.assertIn("Empty cumulative distribution", str(ctx.exception))

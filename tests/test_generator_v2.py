@@ -367,3 +367,59 @@ class GenerationErrorTestCase(TestCase):
         err = GenerationError("test error")
         self.assertIsInstance(err, Exception)
         self.assertEqual(str(err), "test error")
+
+
+class CumulativeV2EdgeCasesTestCase(TestCase):
+    """Additional tests for edge cases in CumulativeV2"""
+
+    def test_invert_in_range_clamps_to_upper(self):
+        """Test that invert_in_range clamps idx to upper_index when out of bounds (line 109)"""
+        s1 = SyllableV2(w_start=10, w_middle=5, w_end=2, sequence=["a"])
+        s2 = SyllableV2(w_start=20, w_middle=10, w_end=5, sequence=["b", "a"])
+
+        coll = SyllableCollectionV2()
+        coll.append(s1)
+        coll.append(s2)
+        coll.finalize()
+
+        cum = CumulativeV2(coll)
+
+        # Request a weight that would be beyond upper_index
+        idx = cum.invert_in_range("start", 9999, 0, 1)
+        self.assertEqual(idx, 1)  # Should clamp to upper_index
+
+
+class MisiPwGenV2EdgeCasesTestCase(TestCase):
+    """Additional tests for edge cases in MisiPwGenV2"""
+
+    def test_partition_length_small_values(self):
+        """Test _partition_length with values <= 3 (line 211)"""
+        self.assertEqual(MisiPwGenV2._partition_length(1), [1])
+        self.assertEqual(MisiPwGenV2._partition_length(2), [2])
+        self.assertEqual(MisiPwGenV2._partition_length(3), [3])
+
+    def test_partition_length_larger_values(self):
+        """Test _partition_length with larger values (lines 217-219)"""
+        result = MisiPwGenV2._partition_length(30)
+        # Check that the sum is correct
+        self.assertEqual(sum(result), 30)
+        # Check that number of parts is in range
+        self.assertTrue(2 <= len(result) <= 6)
+        # Check all parts are at least 1
+        self.assertTrue(all(x >= 1 for x in result))
+
+    def test_generate_sentence_parts_invalid_total_length(self):
+        """Test generate_sentence_parts with invalid total_length (line 231)"""
+        gen = MisiPwGenV2(lang="it")
+        with self.assertRaises(ValueError) as ctx:
+            gen.generate_sentence_parts(0)
+        self.assertIn("must be >= 1", str(ctx.exception))
+
+    def test_generate_sentence_parts_custom_word_count(self):
+        """Test generate_sentence_parts with custom word count (lines 238-240)"""
+        gen = MisiPwGenV2(lang="it")
+        # Test with uneven distribution to trigger while loop
+        parts = gen.generate_sentence_parts(23, words=5)
+        self.assertEqual(len(parts), 5)
+        self.assertEqual(sum(parts), 23)
+        self.assertTrue(all(x >= 1 for x in parts))
