@@ -16,7 +16,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Run tests
+      - name: Install dependencies
         run: |
-          python -m unittest -v
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov coverage
+      - name: Run tests with coverage
+        run: |
+          python -m pytest -p pytest_cov --cov=misipwgen --cov-report=xml --cov-report=term tests/
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.12'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: true
 

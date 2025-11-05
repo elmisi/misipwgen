@@ -7,4 +7,9 @@ black
 isort
 
 # Testing & coverage
-coverage
+pytest>=7.0
+pytest-cov>=4.0
+coverage[toml]>=7.0
+
+# Code quality
+pre-commit>=3.0

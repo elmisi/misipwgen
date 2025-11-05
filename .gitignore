@@ -4,8 +4,25 @@
 # Bytecode caches
 __pycache__/
 */__pycache__/
+*.pyc
+*.pyo
 
 # Coverage/IDE artifacts
 .coverage
 coverage.xml
+htmlcov/
+.pytest_cache/
 .idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+.venv/
