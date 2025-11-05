@@ -259,9 +259,6 @@ class MisiPwGenV2:
             letters += seq[idx]
         return letters
 
-class GenerationError(Exception):
-    pass
-
     # Legacy access
     @classmethod
     def legacy(cls, *args, **kwargs):
@@ -269,3 +266,7 @@ class GenerationError(Exception):
         from .misipwgen import MisiPwGen as _Legacy
 
         return _Legacy(*args, **kwargs)
+
+
+class GenerationError(Exception):
+    pass
