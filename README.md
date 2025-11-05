@@ -37,6 +37,27 @@ python -m misipwgen --sentence 16 --lang it --sep '-'
 python -m misipwgen 5 5 --lang es --sep '-'
 ```
 
+## Web Interface
+
+A simple web interface is available for easy word, phrase, and sentence generation:
+
+```shell
+# Install web dependencies
+pip install -r requirements-web.txt
+
+# Run the web server
+python webapp.py
+```
+
+Then open your browser to `http://localhost:5000` to use the interactive web interface.
+
+Features:
+- **Word Generator**: Generate single words with custom length
+- **Phrase Generator**: Generate multiple words with custom separators
+- **Sentence Generator**: Generate sentences with automatic word splitting
+- **Language Selection**: Choose between Italian and Spanish
+- **Copy to Clipboard**: Easy one-click copying of generated results
+
 ## Use
 
 ```python
