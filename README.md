@@ -55,9 +55,21 @@ Then open your browser to `http://localhost:5000` to use the interactive web int
 
 ### Deploy to the Cloud
 
-Deploy for free to Render, Railway, Fly.io, or PythonAnywhere. See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+**Automated Deployment with GitHub Actions** 🤖
+
+The repository includes GitHub Actions workflows for automatic deployment. Push to `main` and your app deploys automatically!
+
+- **Render.com** (easiest) - Just add `RENDER_DEPLOY_HOOK` secret
+- **Railway.app** - Add `RAILWAY_TOKEN` secret
+- **Fly.io** - Add `FLY_API_TOKEN` secret
+
+**Manual Deployment**
+
+Deploy for free to Render, Railway, Fly.io, or PythonAnywhere.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+📖 **Full deployment guide:** [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ### Features
 

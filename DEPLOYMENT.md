@@ -2,7 +2,39 @@
 
 This guide shows how to deploy the MisiPwGen web interface to various free hosting platforms.
 
-## 🚀 Quick Deploy Options
+## 🤖 Automated Deployment with GitHub Actions
+
+The repository includes GitHub Actions workflows for automatic deployment on every push to `main`.
+
+### Available Workflows
+
+| Workflow | Platform | Setup Difficulty | File |
+|----------|----------|------------------|------|
+| **Deploy to Render** | Render.com | ⭐ Easy | `.github/workflows/deploy-render.yml` |
+| **Deploy to Railway** | Railway.app | ⭐⭐ Medium | `.github/workflows/deploy-railway.yml` |
+| **Deploy to Fly.io** | Fly.io | ⭐⭐⭐ Advanced | `.github/workflows/deploy-fly.yml` |
+
+### Quick Setup (Render - Recommended)
+
+1. Create a web service on [Render.com](https://render.com)
+2. Get your Deploy Hook from Render dashboard → Settings → Deploy Hook
+3. In GitHub: Settings → Secrets and variables → Actions → New repository secret
+   - Name: `RENDER_DEPLOY_HOOK`
+   - Value: Your deploy hook URL
+4. Push to `main` branch → Automatic deployment! 🚀
+
+**📖 Detailed setup for all platforms:** See [`.github/workflows/deploy-docs.md`](.github/workflows/deploy-docs.md)
+
+### Manual Deployment Trigger
+
+You can also trigger deployments manually:
+1. Go to "Actions" tab in GitHub
+2. Select the deployment workflow
+3. Click "Run workflow" → Choose `main` branch → Run
+
+---
+
+## 🚀 Manual Deploy Options
 
 ### Option 1: Render.com (Recommended)
 
