@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MisiPwGen - Multilingual Word Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔤 MisiPwGen</h1>
+            <p class="subtitle">Multilingual Pronounceable Word Generator</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('word')">Word</button>
+            <button class="tab-button" onclick="showTab('phrase')">Phrase</button>
+            <button class="tab-button" onclick="showTab('sentence')">Sentence</button>
+        </div>
+
+        <!-- Word Generator -->
+        <div id="word-tab" class="tab-content active">
+            <div class="card">
+                <h2>Generate a Word</h2>
+                <form id="word-form">
+                    <div class="form-group">
+                        <label for="word-length">Word Length:</label>
+                        <input type="number" id="word-length" name="length" value="7" min="1" max="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="word-language">Language:</label>
+                        <select id="word-language" name="language">
+                            <option value="it">Italian</option>
+                            <option value="es">Spanish</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Word</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Phrase Generator -->
+        <div id="phrase-tab" class="tab-content">
+            <div class="card">
+                <h2>Generate a Phrase</h2>
+                <form id="phrase-form">
+                    <div class="form-group">
+                        <label for="phrase-words">Word Lengths (comma-separated):</label>
+                        <input type="text" id="phrase-words" name="word_lengths" value="5,5,5" placeholder="e.g., 5,6,7" required>
+                        <small>Enter 1-10 numbers separated by commas</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="phrase-separator">Separator:</label>
+                        <select id="phrase-separator" name="separator">
+                            <option value="_">Underscore (_)</option>
+                            <option value="-">Dash (-)</option>
+                            <option value=" ">Space ( )</option>
+                            <option value=".">Dot (.)</option>
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phrase-language">Language:</label>
+                        <select id="phrase-language" name="language">
+                            <option value="it">Italian</option>
+                            <option value="es">Spanish</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Phrase</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sentence Generator -->
+        <div id="sentence-tab" class="tab-content">
+            <div class="card">
+                <h2>Generate a Sentence</h2>
+                <form id="sentence-form">
+                    <div class="form-group">
+                        <label for="sentence-length">Total Length:</label>
+                        <input type="number" id="sentence-length" name="total_length" value="24" min="1" max="100" required>
+                        <small>The generator will automatically split this into words</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="sentence-separator">Separator:</label>
+                        <select id="sentence-separator" name="separator">
+                            <option value="_">Underscore (_)</option>
+                            <option value="-">Dash (-)</option>
+                            <option value=" ">Space ( )</option>
+                            <option value=".">Dot (.)</option>
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sentence-language">Language:</label>
+                        <select id="sentence-language" name="language">
+                            <option value="it">Italian</option>
+                            <option value="es">Spanish</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Sentence</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="result-section" class="result-section" style="display: none;">
+            <div class="card result-card">
+                <h3>Generated Result</h3>
+                <div class="result-content">
+                    <div class="result-text" id="result-text"></div>
+                    <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                </div>
+                <div class="result-info" id="result-info"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by <a href="https://github.com/elmisi/misipwgen" target="_blank">misipwgen</a></p>
+            <p>Supports Italian (it) and Spanish (es) with natural pronunciation</p>
+        </footer>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Form submissions
+        document.getElementById('word-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const length = parseInt(document.getElementById('word-length').value);
+            const language = document.getElementById('word-language').value;
+
+            await generateContent('/api/generate/word', { length, language });
+        });
+
+        document.getElementById('phrase-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const wordsInput = document.getElementById('phrase-words').value;
+            const word_lengths = wordsInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            const separator = document.getElementById('phrase-separator').value;
+            const language = document.getElementById('phrase-language').value;
+
+            if (word_lengths.length === 0) {
+                alert('Please enter valid word lengths');
+                return;
+            }
+
+            await generateContent('/api/generate/phrase', { word_lengths, separator, language });
+        });
+
+        document.getElementById('sentence-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const total_length = parseInt(document.getElementById('sentence-length').value);
+            const separator = document.getElementById('sentence-separator').value;
+            const language = document.getElementById('sentence-language').value;
+
+            await generateContent('/api/generate/sentence', { total_length, separator, language });
+        });
+
+        async function generateContent(endpoint, data) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    displayResult(result);
+                } else {
+                    alert('Error: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function displayResult(result) {
+            const resultSection = document.getElementById('result-section');
+            const resultText = document.getElementById('result-text');
+            const resultInfo = document.getElementById('result-info');
+
+            resultText.textContent = result.result;
+
+            let info = `Type: ${result.type} | Language: ${result.language}`;
+            if (result.word_count) {
+                info += ` | Words: ${result.word_count}`;
+            }
+            if (result.total_length) {
+                info += ` | Total Length: ${result.total_length}`;
+            }
+
+            resultInfo.textContent = info;
+            resultSection.style.display = 'block';
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('result-text').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>
